@@ -16,18 +16,27 @@ Dc <- diag(as.numeric(c))
 
 
 R <- solve(Dr) %*% Xp
-C <- t(solve(Dc) %*% t(Xp))
+C <- solve(Dc) %*% t(Xp)
 Deviation <- Xp - r %*% t(c)
 
 z <- solve(expm::sqrtm((Dr))) %*% Deviation %*% solve(expm::sqrtm((Dc)))
 
 V <- svd(z)$v
+U <- svd(z)$u
 
 CentR <- R - matrix(c(1, 1, 1), nrow = 3) %*% t(c)
+CentC <- C - matrix(c(1, 1, 1), nrow = 3) %*% t(r)
 
 ## sqare root of matrix Dc
 a.eig <- eigen(Dc)
 Dc.sqrt <- a.eig$vectors %*% diag(sqrt(a.eig$values)) %*% solve(a.eig$vectors)
 
+## sqare root of matrix Dr
+a.eig <- eigen(Dr)
+Dr.sqrt <- a.eig$vectors %*% diag(sqrt(a.eig$values)) %*% solve(a.eig$vectors)
+
 ## row profile
 F <-  CentR %*% solve(Dc) %*% (Dc.sqrt %*% V)
+
+## column profile 
+G <- CentC %*% solve(Dr) %*% (Dr.sqrt %*% U)
