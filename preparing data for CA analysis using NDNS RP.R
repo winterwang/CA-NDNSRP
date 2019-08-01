@@ -155,4 +155,109 @@ Indiv1_9_teen <- Indiv1_9 %>%
 save(Indiv1_9_adlt, file = "Indiv1_9_adlt.Rdata")
 save(Indiv1_9_teen, file = "Indiv1_9_teen.Rdata")
 
+epiDisplay::tab1(Indiv1_9$age)
+epiDisplay::tab1(Indiv1_9_adlt$age)
+epiDisplay::tab1(Indiv1_9_teen$age)
+
+rm(ndns_rp_yr1_4a_indiv_uk)
+rm(ndns_rp_yr5_6a_indiv_uk)
+rm(ndns_rp_yr9a_indiv_uk)
+rm(ndns_rp_yr7_8a_indiv_uk)
+
+
+
+##%######################################################%##
+#                                                          #
+####    import and manipulate food level diary data     ####
+#   2019/08/01 updated                                     #
+##%######################################################%##
+ 
+
+
+
+
+
+ndns_rp_yr1_4food <- read_dta(paste(path, "ndns_rp_yr1-4a_foodleveldietarydata_uk_v2.dta", sep = ""))
+
+FoodGrp1_4 <- ndns_rp_yr1_4food %>% 
+  select(-matches("Pota|Calci|Manges|Phos|Iron|Haemiron|Nonhaemiron|Copper|Zinc")) %>% 
+  select(-matches("Chloride|Retino|Totalcarote|Alphacaro|Betacaro|Betacry|Vitamin")) %>% 
+  select(-matches("Thiam|Ribofla|Niacin|Trytopha|Folat|Pantothe|Biotin|Totalnit")) %>% 
+  select(-matches("Nitrogen|Manga|Iodin|Seleniu|Chol|Othersugar|Glucose")) %>% 
+  select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
+  select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
+  select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
+  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+  
+ndns_rp_yr5_6food <- read_dta(paste(path, "ndns_rp_yr5-6a_foodleveldietarydata_v2.dta", sep = ""))
+
+FoodGrp5_6 <- ndns_rp_yr5_6food %>% 
+  select(-matches("Pota|Calci|Manges|Phos|Iron|Haemiron|Nonhaemiron|Copper|Zinc")) %>% 
+  select(-matches("Chloride|Retino|Totalcarote|Alphacaro|Betacaro|Betacry|Vitamin")) %>% 
+  select(-matches("Thiam|Ribofla|Niacin|Trytopha|Folat|Pantothe|Biotin|Totalnit")) %>% 
+  select(-matches("Nitrogen|Manga|Iodin|Seleniu|Chol|Othersugar|Glucose")) %>% 
+  select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
+  select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
+  select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
+  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+
+                  
+ndns_rp_yr7_8food <- read_dta(paste(path, "ndns_rp_yr7-8a_foodleveldietarydata.dta", sep = ""))
+
+FoodGrp7_8 <- ndns_rp_yr7_8food %>% 
+  select(-matches("Pota|Calci|Manges|Phos|Iron|Haemiron|Nonhaemiron|Copper|Zinc")) %>% 
+  select(-matches("Chloride|Retino|Totalcarote|Alphacaro|Betacaro|Betacry|Vitamin")) %>% 
+  select(-matches("Thiam|Ribofla|Niacin|Trytopha|Folat|Pantothe|Biotin|Totalnit")) %>% 
+  select(-matches("Nitrogen|Manga|Iodin|Seleniu|Chol|Othersugar|Glucose")) %>% 
+  select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
+  select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
+  select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
+  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+
+
+ndns_rp_yr9food <- read_dta(paste(path, "ndns_rp_yr9a_foodleveldietarydata.dta", sep = ""))
+
+FoodGrp9 <- ndns_rp_yr9food %>% 
+  select(-matches("Pota|Calci|Manges|Phos|Iron|Haemiron|Nonhaemiron|Copper|Zinc")) %>% 
+  select(-matches("Chloride|Retino|Totalcarote|Alphacaro|Betacaro|Betacry|Vitamin")) %>% 
+  select(-matches("Thiam|Ribofla|Niacin|Trytopha|Folat|Pantothe|Biotin|Totalnit")) %>% 
+  select(-matches("Nitrogen|Manga|Iodin|Seleniu|Chol|Othersugar|Glucose")) %>% 
+  select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
+  select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
+  select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
+  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+
+
+
+
+
+##%######################################################%##
+#                                                          #
+####            merge food group data sets              ####
+#                                                          #
+##%######################################################%##
+
+
+Food1_9 <- bind_rows(FoodGrp1_4, FoodGrp5_6, FoodGrp7_8, FoodGrp9)  
+
+
+
+##%######################################################%##
+#                                                          #
+####     reduce records to those we need age >= 19      ####
+#                                                          #
+##%######################################################%##
+
+
+Food1_9_adlt <- Food1_9 %>% 
+  filter(Age >= 19)
+
+Food1_9_teen <- Food1_9 %>% 
+  filter(Age < 19 & Age >= 11)
+
+
+save(Food1_9_adlt, file = "Food1_9_adlt.Rdata")
+save(Food1_9_teen, file = "Food1_9_teen.Rdata")
+
+
 
