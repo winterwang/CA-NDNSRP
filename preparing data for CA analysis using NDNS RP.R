@@ -19,22 +19,140 @@ ndns_rp_yr9a_indiv_uk <- read_dta(paste(path, "ndns_rp_yr9a_indiv.dta", sep = ""
 ####            profile calc and CA anlysis             ####
 #                                                          #
 ##%######################################################%##
-
+library(plyr)
 library(tidyverse)
+library(dplyr)
+library(readr)
+library(naniar)
+
+
 indiv_yr1_4 <- ndns_rp_yr1_4a_indiv_uk %>% 
-  select(c("seriali", "serialh", "cluster", "addnum", "area", "nssec8", "wti_CY1234", 
-           "iout", "Sex", "Age", "agegr1", "agegr2", "diaryd", "quarter4", "month", 
-           "hrpno", "adchild"))
+  select(seriali, serialh, cluster, addnum, area, nssec8, wti_CY1234, 
+         IOut, Sex, age, agegr1, agegr2, DiaryD, quarter4, month, 
+         HRPNo, AdChild, bmival, wstval, Diabetes, Glucose, A1C, cigsta3,
+         dnoft3, dnnow, ethgr5, ethgr2, gor, qual7, Outcome) %>% 
+  mutate(Years = "1-4", 
+         cluster2 = NA, cluster3 = NA, 
+         cluster4 = NA, cluster5 = NA) %>% 
+  rename(cluster1 = cluster, wti = wti_CY1234, 
+         Month = month) %>% 
+  replace_with_na(replace = list(bmival = -1, wstval = -1, 
+                                 qual7 = -8, dnnow = -1, 
+                                 Glucose = -1, A1C = -1,
+                                 cigsta3 = -1, nssec8 = -8, 
+                                 ethgr5 = -4, ethgr2 = -4, 
+                                 Diabetes = -1, dnoft3 = -9)) %>% 
+  replace_with_na(replace = list(nssec8 = -1, qual7 = -1, 
+                                 dnoft3 = -8, dnnow = -8)) %>% 
+  replace_with_na(replace = list(nssec8 = 99, dnnow = -9,
+                                 dnoft3 = -4)) %>% 
+  replace_with_na(replace = list(dnoft3 = -1, dnnow = -4))
+  
+
+
 
 indiv_yr5_6 <- ndns_rp_yr5_6a_indiv_uk %>% 
-  select(c("seriali", "serialh", "cluster", "addnum", "area", "nssec8", "wti_CY1234",
-           "iout", "Sex", "Age", "agegr1", "agegr2", "diaryd", "quarter4", "month", 
-           "hrpno", "adchild"))
+  select(seriali, serialh, cluster1, cluster2, cluster3, cluster4, cluster5,
+         addnum, area, nssec8, wti_Y56,
+         IOut, Sex, age, agegr1, agegr2, DiaryD, Quarter, Month, 
+         HRPNo, AdChild, bmival, wstval, Diabetes, Glucose, A1C, cigsta3,
+         dnoft3, dnnow, ethgrp5, ethgrp2, gor, qual7, Outcome) %>% 
+  mutate(Years = "5-6") %>% 
+  rename(wti = wti_Y56, quarter4 = Quarter,
+         ethgr5 = ethgrp5, ethgr2 = ethgrp2) %>% 
+  replace_with_na(replace = list(bmival = -1, wstval = -1, 
+                                 qual7 = -8, dnnow = -1, 
+                                 Glucose = -1, A1C = -1,
+                                 cigsta3 = -9, nssec8 = -8, 
+                                 ethgr5 = -4, ethgr2 = -4, 
+                                 Diabetes = -1, dnoft3 = -9)) %>% 
+  replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
+                                 dnoft3 = -8, dnnow = -8, wstval = -8, 
+                                 Diabetes = -9, cigsta3 = -8)) %>% 
+  replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
+                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 cigsta3 = -4)) %>% 
+  replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
+                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
+  replace_with_na(replace = list(Diabetes = -4))
 
 indiv_yr7_8 <- ndns_rp_yr7_8a_indiv_uk %>% 
-  select(c("seriali", "serialh", "cluster", "addnum", "area", "nssec8", "wti_CY1234", 
-           "iout", "Sex", "Age", "agegr1", "agegr2", "diaryd", "quarter4", "month", 
-           "hrpno", "adchild"))
+  select(c(seriali, serialh, cluster1, cluster2, cluster3, cluster4, cluster5,
+           addnum, area, nssec8, wti_Y78, 
+           IOut, Sex, age, agegr1, agegr2, DiaryD, Quarter, Month, 
+           HRPNo, AdChild, bmival, wstval, Diabetes, Glucose, A1C, cigsta3,
+           dnoft3, dnnow, ethgrp5, ethgrp2, gor, qual7, Outcome)) %>% 
+  mutate(Years = "7-8") %>% 
+  rename(wti = wti_Y78, quarter4 = Quarter,
+         ethgr5 = ethgrp5, ethgr2 = ethgrp2) %>% 
+  replace_with_na(replace = list(bmival = -1, wstval = -1, 
+                                 qual7 = -8, dnnow = -1, 
+                                 Glucose = -1, A1C = -1,
+                                 cigsta3 = -9, nssec8 = -8, 
+                                 ethgr5 = -4, ethgr2 = -4, 
+                                 Diabetes = -1, dnoft3 = -9)) %>% 
+  replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
+                                 dnoft3 = -8, dnnow = -8, wstval = -8, 
+                                 Diabetes = -9, cigsta3 = -8)) %>% 
+  replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
+                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 cigsta3 = -4)) %>% 
+  replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
+                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
+  replace_with_na(replace = list(Diabetes = -4))
 
-indiv_yr1_4 <- ndns_rp_yr1_4a_indiv_uk %>% 
-  select(c("seriali", "serialh", "cluster", "addnum", "area", "nssec8", "wti_CY1234"))
+
+indiv_yr9 <- ndns_rp_yr9a_indiv_uk %>% 
+  select(c(seriali, serialh, cluster1, cluster2, cluster3, cluster4, cluster5,
+           addnum, area, nssec8, wti_Y9, 
+           IOut, Sex, age, agegr1, agegr2, DiaryD, Quarter, month, 
+           HRPNo, AdChild, bmival, wstval, Diabetes, Glucose, A1C, cigsta3,
+           dnoft3, dnnow, ethgrp5, ethgrp2, GOR, qual7, Outcome)) %>% 
+  mutate(Years = "9") %>% 
+  rename(wti = wti_Y9, quarter4 = Quarter,
+         ethgr5 = ethgrp5, ethgr2 = ethgrp2, 
+         gor = GOR, Month = month) %>% 
+  replace_with_na(replace = list(bmival = -1, wstval = -1, 
+                                 qual7 = -8, dnnow = -1, 
+                                 Glucose = -1, A1C = -1,
+                                 cigsta3 = -9, nssec8 = -8, 
+                                 ethgr5 = -4, ethgr2 = -4, 
+                                 Diabetes = -1, dnoft3 = -9)) %>% 
+  replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
+                                 dnoft3 = -8, dnnow = -8, wstval = -8, 
+                                 Diabetes = -9, cigsta3 = -8)) %>% 
+  replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
+                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 cigsta3 = -4)) %>% 
+  replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
+                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
+  replace_with_na(replace = list(Diabetes = -4))
+
+##%######################################################%##
+#                                                          #
+####            merge individual data sets              ####
+#                                                          #
+##%######################################################%##
+
+  
+Indiv1_9 <- bind_rows(indiv_yr1_4, indiv_yr5_6, indiv_yr7_8, indiv_yr9)  
+  
+  
+##%######################################################%##
+#                                                          #
+####     reduce records to those we need age >= 19      ####
+#                                                          #
+##%######################################################%##
+
+
+Indiv1_9_adlt <- Indiv1_9 %>% 
+  filter(age >= 19)
+
+Indiv1_9_teen <- Indiv1_9 %>% 
+  filter(age < 19 & age >= 11)
+
+
+save(Indiv1_9_adlt, file = "Indiv1_9_adlt.Rdata")
+save(Indiv1_9_teen, file = "Indiv1_9_teen.Rdata")
+
+
