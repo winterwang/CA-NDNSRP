@@ -312,6 +312,7 @@ Tfood_ind <- Food1_9_adlt %>%
 #               2019-08-06                                 #
 ##%######################################################%##
 
+# n of food records by day of week 
 ggplot(HFood, aes(x=factor(DayofWeek)))+
   geom_bar(fill="steelblue")+
   theme_minimal()
