@@ -116,4 +116,98 @@ Food1_9_adlt <- Food1_9_adlt %>%
                 if_else(grepl("Coffee|Community|Rest|Sport|Public|Place|Leis|Fast|Holiday", Where),
                         "Leis", "Other")))))))
 
-fct_count(Food1_9_adlt$Locat)
+Food1_9_adlt %>% 
+  group_by(Locat) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+
+
+Food1_9_adlt$Locat_type <- fct_collapse(Food1_9_adlt$Locat, 
+                                        Home = c("Home"), 
+                                        School_work = c("School", "Work"), 
+                                        Others = c("Friend", "Leis", "Move", "Other"))
+fct_count(Food1_9_adlt$Locat_type)
+
+
+# Define labels for main food groups
+
+Food1_9_adlt %>% 
+  group_by(MainFoodGroupCode) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+
+Food1_9_adlt <- Food1_9_adlt %>% 
+  mutate(mfgLab = factor(MainFoodGroupCode)) %>% 
+  mutate(mfgLab = fct_recode(mfgLab, 
+                             "Pasta & Rice" 　= "1",
+                             "White Bread"    = "2",
+                             "WMeal Bread"    = "3",
+                             "Oth Bread"      = "4",
+                             "HiFi cereals"   = "5",
+                             "LoFi cereals"   = "6",
+                             "Biscuits"       = "7",
+                             "Cakes & Pastries" = "8",
+                             "Puddings"        = "9",  
+                             "Whole Milk"      = "10",
+                             "2% milk"         = "11",
+                             "Skimmed Milk"    = "12",
+                             "Other Milk Cream"= "13",
+                             "Cheese"          = "14",
+                             "Yogurt"          = "15",
+                             "Eggs"            = "16",
+                             "Butter"          = "17",
+                             "Polyunsatu margarine" = "18",
+                             "LowFat Spreads"   = "19",
+                             "Margarine"        = "20",
+                             "Spreads less-fat" = "21",
+                             "Bacon and ham"    = "22",
+                             "Beef"             = "23",
+                             "Lamb"             = "24",
+                             "Pork"             = "25",
+                             "Coated Chicken"   = "26",
+                             "Chicken/turkey"   = "27",
+                             "Liver"            = "28",
+                             "Burgers/kebabs"   = "29",
+                             "Sausages"         = "30",
+                             "Meat pastries"    = "31",
+                             "Other meat"       = "32",
+                             "White fish, shellfish" = "33", 
+                             "Other white fish"     = "34",
+                             "Oily fish"            = "35",
+                             "Salad and raw veg"    = "36",
+                             "Veg not raw"          = "37",
+                             "Chips"                = "38",
+                             "Potatos other"        = "39",
+                             "Fruit"                = "40",
+                             "JamsSpreads"          = "41",
+                             "Crisps"               = "42",
+                             "Sugar confectionery"  = "43",
+                             "Chocolate"            = "44",
+                             "Fruit juice"          = "45",
+                             "Spirits and liqueurs" = "47",
+                             "Wine"                 = "48",
+                             "Beer lager"           = "49",
+                             "Misc./Vending"        = "50",
+                             "Tea/Coffee/Water"     = "51",
+                             "Commercial toddlers foods" = "52",
+                             "Ice cream"            = "53",
+                             "Dietary supplements"  = "54",
+                             "Artificial Sweeteners"= "55",
+                             "Nuts and seeds"       = "56",
+                             "Reg soft drinks"      = "57",
+                             "Diet soft drinks"     = "58",
+                             "Brown Bread"          = "59",
+                             "1% milk"              = "60",
+                             "61" = "61"))
+                         
+
+TableFoogGroup <- Food1_9_adlt %>% 
+  group_by(mfgLab) %>% 
+  summarise(n = n(), meanHpoint = mean(H_points, na.rm = T), mfgCalories = sum(Energykcal)) %>% 
+  arrange(-mfgCalories) %>% 
+  mutate(n.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cal.Prop = paste0(round(100 * mfgCalories/sum(mfgCalories), 2), "%"))  %>% 
+  mutate(calprop = mfgCalories/sum(mfgCalories)) %>% 
+  print(n=Inf)

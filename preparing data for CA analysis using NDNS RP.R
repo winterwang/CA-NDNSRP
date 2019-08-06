@@ -7,6 +7,7 @@
 library(haven)
 
 path <- c("~/pCloud Drive/LSHTM/study/project/6533stata_NDNSRP20190719/UKDA-6533-stata/stata/stata11_se/")
+path <- c("~/ドキュメント/NDNS/UKDA-6533-stata-downloaded in Japan/stata/stata11_se/") # path on Ubuntu 16.04
 
 ndns_rp_yr1_4a_indiv_uk <- read_dta(paste(path, "ndns_rp_yr1-4a_indiv_uk.dta", sep = ""))
 ndns_rp_yr5_6a_indiv_uk <- read_dta(paste(path, "ndns_rp_yr5-6a_indiv.dta", sep = ""))
