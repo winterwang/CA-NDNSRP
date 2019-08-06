@@ -84,6 +84,7 @@ library(tidyverse)
 # new recode the location/time variable to an integer for CA
 
 Food1_9_adlt %>% 
+  ungroup() %>% 
   group_by(Where) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
@@ -91,6 +92,7 @@ Food1_9_adlt %>%
 
 
 Food1_9_adlt %>% 
+  ungroup() %>% 
   group_by(MealTimeSlot) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
@@ -117,6 +119,7 @@ Food1_9_adlt <- Food1_9_adlt %>%
                         "Leis", "Other")))))))
 
 Food1_9_adlt %>% 
+  ungroup() %>% 
   group_by(Locat) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
@@ -133,6 +136,7 @@ fct_count(Food1_9_adlt$Locat_type)
 # Define labels for main food groups
 
 Food1_9_adlt %>% 
+  ungroup() %>% 
   group_by(MainFoodGroupCode) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
@@ -200,14 +204,114 @@ Food1_9_adlt <- Food1_9_adlt %>%
                              "Diet soft drinks"     = "58",
                              "Brown Bread"          = "59",
                              "1% milk"              = "60",
-                             "61" = "61"))
+                             "Smoothies"            = "61"))
                          
+save(Food1_9_adlt, file = "Food1_9_adlt_labl.Rdata")
 
 TableFoogGroup <- Food1_9_adlt %>% 
+  ungroup() %>% 
   group_by(mfgLab) %>% 
   summarise(n = n(), meanHpoint = mean(H_points, na.rm = T), mfgCalories = sum(Energykcal)) %>% 
   arrange(-mfgCalories) %>% 
   mutate(n.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
   mutate(cal.Prop = paste0(round(100 * mfgCalories/sum(mfgCalories), 2), "%"))  %>% 
   mutate(calprop = mfgCalories/sum(mfgCalories)) %>% 
+  mutate(calcumprop = paste0(round(100 * cumsum(calprop), 3), "%")) %>% 
   print(n=Inf)
+
+
+##%######################################################%##
+#                                                          #
+####         extrate names of P50 and P80 food          ####
+####              groups contributing the               ####
+####           majority of calories consumed            ####
+#                                                          #
+##%######################################################%##
+
+
+P50foodnames <- TableFoogGroup$mfgLab[cumsum(TableFoogGroup$calprop) < 0.51]
+P80foodnames <- TableFoogGroup$mfgLab[cumsum(TableFoogGroup$calprop) < 0.81]
+
+##%######################################################%##
+#                                                          #
+####       healthy unhealth food group definition       ####
+#                                                          #
+##%######################################################%##
+
+
+TableFoogGroup <- TableFoogGroup %>% 
+  mutate(healthy     = meanHpoint < -2, 
+         lesshealthy = meanHpoint > 4, 
+         neutral     = (meanHpoint <= 4) & (meanHpoint >= -2))
+
+TableFoogGroup %>% 
+  filter(healthy)
+
+HealthyName <- TableFoogGroup$mfgLab[TableFoogGroup$healthy]
+
+TableFoogGroup %>% 
+  filter(neutral)
+
+NeutralName <- TableFoogGroup$mfgLab[TableFoogGroup$neutral]
+
+TableFoogGroup %>% 
+  filter(lesshealthy)
+
+LessHealthyName <- TableFoogGroup$mfgLab[TableFoogGroup$lesshealthy]
+
+Food1_9_adlt <- Food1_9_adlt %>% 
+  mutate(P50 = if_else(mfgLab %in% P50foodnames, TRUE, FALSE), 
+         P80 = if_else(mfgLab %in% P80foodnames, TRUE, FALSE), 
+         HealthFoodGr = if_else(mfgLab %in% HealthyName, "Healthy", 
+                          if_else(mfgLab %in% NeutralName, "Neutral", 
+                            if_else(mfgLab %in% LessHealthyName, 
+                                    "LessHealthy", "None"))))
+
+
+# HFood is allfood with HT=0 for hypothesis generation
+# TFood is allfood with HT=1 for hypothesis testing
+
+# Now split the food diaries in two datasets (just by food recordings)
+
+set.seed(1701745)
+Food1_9_adlt$rand <-  runif(dim(Food1_9_adlt)[1], min = 0, max = 1)
+Food1_9_adlt$HT <- Food1_9_adlt$rand > 0.5
+
+HFood <- Food1_9_adlt %>% 
+  filter(!HT)
+
+TFood <- Food1_9_adlt %>% 
+  filter(HT)
+
+save(HFood, file = "HFood.Rdata")
+
+save(TFood, file = "TFood.Rdata")
+  
+# Now split the food diaries in two datasets (by individual)
+
+NDNS <- Food1_9_adlt[!duplicated(Food1_9_adlt$seriali), ] %>% 
+  select(seriali)
+
+set.seed(1701745)
+NDNS$rand <-  runif(dim(NDNS)[1], min = 0, max = 1)
+NDNS$HT <- NDNS$rand > 0.5
+
+Food1_9_adlt <- Food1_9_adlt %>% 
+  left_join(NDNS, by = "seriali")
+
+HFood_ind <- Food1_9_adlt %>% 
+  filter(!HT.y)
+  
+Tfood_ind <- Food1_9_adlt %>% 
+  filter(HT.y)
+  
+
+##%######################################################%##
+#                                                          #
+####   Use HFood to perform Correspondence analysis:    ####
+#               2019-08-06                                 #
+##%######################################################%##
+
+ggplot(HFood, aes(x=factor(DayofWeek)))+
+  geom_bar(fill="steelblue")+
+  theme_minimal()
