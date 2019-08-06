@@ -136,7 +136,8 @@ indiv_yr9 <- ndns_rp_yr9a_indiv_uk %>%
 
   
 Indiv1_9 <- bind_rows(indiv_yr1_4, indiv_yr5_6, indiv_yr7_8, indiv_yr9)  
-  
+
+Indiv1_6 <- bind_rows(indiv_yr1_4, indiv_yr5_6)  
   
 ##%######################################################%##
 #                                                          #
@@ -147,6 +148,16 @@ Indiv1_9 <- bind_rows(indiv_yr1_4, indiv_yr5_6, indiv_yr7_8, indiv_yr9)
 
 Indiv1_9_adlt <- Indiv1_9 %>% 
   filter(age >= 19)
+
+Indiv1_6_adlt <- Indiv1_6 %>% 
+  filter(age < 65 & age >= 19)
+Indiv1_6_adlt %>% 
+  group_by(Sex) %>% 
+  summarise(n = n()) %>%  
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf) # confirmed Marta's data
+
+
 
 Indiv1_9_teen <- Indiv1_9 %>% 
   filter(age < 19 & age >= 11)
@@ -187,7 +198,7 @@ FoodGrp1_4 <- ndns_rp_yr1_4food %>%
   select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
   select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
   select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
-  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+  select(-matches("Cottageche|Cheddarch|Otherchees|variab")) 
   
 ndns_rp_yr5_6food <- read_dta(paste(path, "ndns_rp_yr5-6a_foodleveldietarydata_v2.dta", sep = ""))
 
@@ -199,7 +210,7 @@ FoodGrp5_6 <- ndns_rp_yr5_6food %>%
   select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
   select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
   select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
-  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+  select(-matches("Cottageche|Cheddarch|Otherchees|variab")) 
 
                   
 ndns_rp_yr7_8food <- read_dta(paste(path, "ndns_rp_yr7-8a_foodleveldietarydata.dta", sep = ""))
@@ -212,7 +223,7 @@ FoodGrp7_8 <- ndns_rp_yr7_8food %>%
   select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
   select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
   select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
-  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+  select(-matches("Cottageche|Cheddarch|Otherchees|variab")) 
 
 
 ndns_rp_yr9food <- read_dta(paste(path, "ndns_rp_yr9a_foodleveldietarydata.dta", sep = ""))
@@ -225,7 +236,7 @@ FoodGrp9 <- ndns_rp_yr9food %>%
   select(-matches("Fructose|Sucr|Maltose|Lactose|Nonmilk|Intrin|Beef|Lamb")) %>%  
   select(-matches("Pork|Processed|Otherred|Burger|Sausages|Offal|Poultry")) %>% 
   select(-matches("Processedpou|Gamebird|Whitefish|oilyfish|Canned|Shellfish")) %>% 
-  select(-matches("Cottageche|Cheddarch|Otherchees|fattyacid|variab")) 
+  select(-matches("Cottageche|Cheddarch|Otherchees|variab")) 
 
 
 
@@ -240,7 +251,7 @@ FoodGrp9 <- ndns_rp_yr9food %>%
 
 Food1_9 <- bind_rows(FoodGrp1_4, FoodGrp5_6, FoodGrp7_8, FoodGrp9)  
 
-
+Food1_6 <- bind_rows(FoodGrp1_4, FoodGrp5_6) # n = 868502
 
 ##%######################################################%##
 #                                                          #
@@ -252,12 +263,76 @@ Food1_9 <- bind_rows(FoodGrp1_4, FoodGrp5_6, FoodGrp7_8, FoodGrp9)
 Food1_9_adlt <- Food1_9 %>% 
   filter(Age >= 19)
 
+Food1_6_adlt <- Food1_6 %>% 
+  filter(Age >= 19 & Age < 65) # n = 377836
+
+a <- Food1_6_adlt %>% 
+  group_by(seriali) %>% 
+  summarise(n = n())
+
+
+
+
+summary(a$n) # n of records 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 15.0    79.0   100.0   103.2   125.0   347.0  
+
 Food1_9_teen <- Food1_9 %>% 
   filter(Age < 19 & Age >= 11)
 
 
+
+##%######################################################%##
+#                                                          #
+####     summarise the datas                            ####
+#                                                          #
+##%######################################################%##
+
+Food1_9_adlt <- Food1_9_adlt %>% 
+  mutate(MealTimeSlot = factor(MealTimeDescription, 
+                               levels = c("6am to 8:59am", 
+                                          "9am to 11:59am",
+                                          "12 noon to 1:59pm",
+                                          "2pm to 4:59pm",
+                                          "5pm to 7:59pm",
+                                          "8pm to 9:59pm",
+                                          "10pm to 5:59am"))) %>% 
+  mutate(DayW = factor(DayofWeek, 
+                       levels = c("Monday", "Tuesday",
+                                  "Wednesday", "Thursday", 
+                                  "Friday", "Saturday", 
+                                  "Sunday")))
+
+## mealtime slot description
+Food1_9_adlt %>% 
+  group_by(MealTimeSlot) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(n)/sum(n), 2), "%"))
+
+## dayofweek description
+Food1_9_adlt %>% 
+  group_by(DayW) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(n)/sum(n), 2), "%"))
+
+## whowith
+Food1_9_adlt %>% 
+  group_by(WhoWith) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(n)/sum(n), 2), "%"))
+
+## Where
+Food1_9_adlt %>% 
+  group_by(Where) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(n)/sum(n), 2), "%")) %>% 
+  print(n=Inf) #
+
+
+
 save(Food1_9_adlt, file = "Food1_9_adlt.Rdata")
 save(Food1_9_teen, file = "Food1_9_teen.Rdata")
-
-
-
