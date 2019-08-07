@@ -1,0 +1,322 @@
+---
+title: "Results of CA using NDNS RP (food group and timeslots)"
+author: "Chaochen Wang"
+date: "8/7/2019"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    number_section: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+```
+
+# Pre-CA analyses
+
+## Summary statistics 
+
+In this section, we look at some of the summary statistics for our NDNS RP (9 year) dataset in adults (age >= 19 y.o.). After excluding food recordings from young participants, there were 749,026 recordings of food entry written by the 6802 pariticipants.
+
+### numbers of food entries by time slots (7 or 3 groups)
+
+```{r cache=TRUE}
+
+load("../Food1_9_adlt_labl.Rdata")
+
+Food1_9_adlt %>% 
+  ungroup() %>% 
+  group_by(MealTimeSlot) %>% 
+  summarise(n = n()) %>% 
+  mutate(relfreq = n/sum(n)) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 3), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(relfreq), 3), "%")) %>% 
+  print(n=Inf)
+
+
+Food1_9_adlt %>% 
+  ungroup() %>% 
+  group_by(Time3g) %>% 
+  summarise(n = n()) %>% 
+  mutate(relfreq = n/sum(n)) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 3), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(relfreq), 3), "%")) %>% 
+  print(n=Inf)
+
+```
+
+### Days of week collected in the dataset
+
+```{r cache=TRUE}
+Food1_9_adlt %>% 
+  mutate(DayofWeek = factor(DayofWeek, levels = c("Monday",
+                                                  "Tuesday",
+                                                  "Wednesday",
+                                                  "Thursday",
+                                                  "Friday", 
+                                                  "Saturday",
+                                                  "Sunday"))) %>% 
+  ungroup() %>% 
+  group_by(DayofWeek) %>% 
+  summarise(n = n()) %>% 
+  mutate(relfreq = n/sum(n)) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 3), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(relfreq), 3), "%")) %>% 
+  print(n=Inf)
+```
+
+
+### Sex and age
+
+The participants were:
+
+- 2810 men (sex = 1) and 
+- 3992 women (sex = 2) aged 19 or above.
+
+```{r cache=TRUE}
+load("../Indiv1_9_adlt.Rdata")
+Indiv1_9_adlt$Sex <- factor(Indiv1_9_adlt$Sex)
+Indiv1_9_adlt %>% 
+  group_by(Sex) %>% 
+  summarise(Meanage = mean(age), 
+            SDage = sd(age))
+
+ggplot(Indiv1_9_adlt, aes(x=age, fill = Sex, color = Sex)) + 
+ geom_histogram(aes(y=..density..), colour="black", fill="white", binwidth = 2)+
+ geom_density(alpha=.2) 
+```
+
+### Diabetes status
+
+In all 9 years data combined, there were:
+
+- 227 diabetes patients   (DM4cat = 3);
+- 99 undiagnosed diabetes (DM4cat = 2);
+- 133 prediabetes         (DM4cat = 1);
+- 3717 missing values.
+
+
+```{r cache=TRUE}
+load("../Indiv1_9_adlt.Rdata")
+
+Indiv1_9_adlt %>% 
+  group_by(DM4cat) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+```
+
+### Social economic status
+
+121 pariticipants' socio-economic classification were missing.
+
+```{r}
+library(naniar)
+
+Indiv1_9_adlt %>% 
+  replace_with_na(replace = list(nssec8 = -9)) %>% 
+  group_by(nssec8) %>% 
+  summarise(n = n()) %>% 
+  mutate(relfreq = n/sum(n)) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 3), "%"))  %>% 
+  mutate(cum.freq = paste0(round(100 * cumsum(relfreq), 3), "%")) %>% 
+  print(n=Inf)
+```
+
+## Food groups 
+
+All 60 food groups sorted by the percentage contributed to the total calories consumed by participants. We can see 13 food groups contributed 50% of total energy that these pariticipants consumed, 28 food groups contributed 80% of total energy that these people consumed. 
+
+```{r}
+TableFoogGroup <- Food1_9_adlt %>% 
+  ungroup() %>% 
+  group_by(mfgLab) %>% 
+  summarise(n = n(), meanHpoint = mean(H_points, na.rm = T), mfgCalories = sum(Energykcal)) %>% 
+  arrange(-mfgCalories) %>% 
+  mutate(n.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cal.Prop = paste0(round(100 * mfgCalories/sum(mfgCalories), 2), "%"))  %>% 
+  mutate(calprop = mfgCalories/sum(mfgCalories)) %>% 
+  mutate(calcumprop = paste0(round(100 * cumsum(calprop), 3), "%")) %>% 
+  select(-calprop) %>% 
+  print(n=Inf)
+
+```
+
+### Healthy point definition by (Pechey et al, 2013)
+
+
+#### Healthy foods (n = 3) meanHpoint < -2
+
+```{r, cache=TRUE}
+TableFoogGroup <- TableFoogGroup %>% 
+  mutate(healthy     = meanHpoint < -2, 
+         lesshealthy = meanHpoint > 4, 
+         neutral     = (meanHpoint <= 4) & (meanHpoint >= -2))
+
+TableFoogGroup %>% 
+  filter(healthy) %>% 
+  select(-lesshealthy, -neutral,-calcumprop)
+```
+
+#### Neutral foods (n = 26); meanHpoint between (-2, 4)
+
+```{r, cache=TRUE}
+TableFoogGroup %>% 
+  filter(neutral) %>% 
+  select(-lesshealthy, -healthy, -calcumprop) %>% 
+  print(n=Inf)
+```
+
+#### Less Healthy foods (n = 31); meanHpoint > 4
+
+
+```{r}
+TableFoogGroup %>% 
+  filter(lesshealthy) %>% 
+  select(-neutral, -healthy, -calcumprop) %>% 
+  print(n=Inf)
+```
+
+
+### Healthy point definition by tertiles of meanHpoint
+
+```{r}
+TableFoogGroup <- TableFoogGroup %>% 
+  mutate(HealthPoints3g = cut(meanHpoint, breaks = 3)) %>% 
+  mutate(HealthPoints3g = as.character(HealthPoints3g)) %>% 
+  mutate(HealthPoints3g = fct_recode(HealthPoints3g, 
+                                     G1   = "(-7.06,3.61]",
+                                     G2   = "(3.61,14.3]",
+                                     G3   = "(14.3,24.9]"
+                                     ))
+
+```
+
+
+#### Healthy foods Group 1 meanHpoint in (-7.06,3.61]
+
+```{r, cache=TRUE}
+TableFoogGroup %>% 
+  filter(HealthPoints3g == "G1") %>% 
+  select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g) %>% 
+  print(n=Inf)
+```
+
+
+
+#### Healthy foods Group 2 meanHpoint in (3.61,14.3]
+
+```{r, cache=TRUE}
+TableFoogGroup %>% 
+  filter(HealthPoints3g == "G2") %>% 
+  select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g)
+```
+
+#### Healthy foods Group 3 meanHpoint in (14.3,24.9]
+
+```{r, cache=TRUE}
+TableFoogGroup %>% 
+  filter(HealthPoints3g == "G3") %>% 
+  select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g)
+```
+
+
+
+# CA analysis in all adults
+
+
+## All food group and 7 Eating Time slots
+
+
+### Contingency table of food groups and time slots:
+
+Note that we have randomly splitted the food recording data sets into two subsets. From here we are using only the data set 1 for hypothesis generation.
+
+```{r, message=FALSE}
+library(FactoMineR)
+library(factoextra)
+load("../HFood.Rdata")
+freqtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot)
+as.data.frame.matrix(freqtab) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### Foods and 7 Eating Time Slots
+
+```{r cache=TRUE, fig.cap="Scree plot -- CA of the NDNS RP 9 year data, eating time slots and food goups."}
+res.ca <- CA(as.data.frame.matrix(freqtab), graph = FALSE)
+fviz_screeplot(res.ca, addlabels = TRUE)
+```
+
+
+First two dimensions represents `r 68.9 + 15.3`% of the inertia (variation in time slots profile).
+
+
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+fviz_ca_biplot(res.ca, repel = TRUE, title = "Biplot of Correspondence analysis for 60 food groups.") 
+```
+
+
+- The horizontal axis contrasts the early time (am, and earlier than 6 am included) with later time (noon, afternoon, till 10 pm); and breakfast foods with the others.
+
+- The vertical axis shows large contribution from alcohol against the others. 
+
+### Biplot by food healthiness
+
+#### Three healthy food only
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+HealthyFoods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% c("Veg not raw", "Fruit", "Salad and raw veg"),]
+
+Healthy.ca <- CA(HealthyFoods, graph = FALSE)
+fviz_ca_biplot(Healthy.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for 3 healthy food groups.") 
+```
+
+
+```{r cache=TRUE, include=FALSE}
+# extract recordings for healthy foods
+Hthy <- as.logical(HFood$HealthFoodGr == "Healthy")
+Htab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = Hthy)
+library(cabootcrs) 
+Hmatrix <- matrix(data = Htab, nrow = 3, ncol = 7, 
+                  dimnames = list(c("Fruit", "Salad and raw veg", "Veg not raw"), 
+                                  c("6-9am", "9am-1159am", "12noon-0159pm", "2pm-0459pm", 
+                                    "5pm-0759pm", "8pm-0959pm", "10pm-0559am")))
+Hcaboot <- cabootcrs(Hmatrix, resampledistn = "multinomial")
+```
+
+
+
+
+#### Neutral food (n = 26)
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+NeutralFoods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$neutral],]
+
+Neutral.ca <- CA(NeutralFoods, graph = FALSE)
+fviz_ca_biplot(Neutral.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for 26 neutral food groups.") 
+```
+
+
+
+
+
+#### less healthy food (n = 31)
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+LessFoods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$lesshealthy],]
+
+Less.ca <- CA(LessFoods, graph = FALSE)
+fviz_ca_biplot(Less.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for 31 less healthy food groups.") 
+```

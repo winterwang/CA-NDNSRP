@@ -206,7 +206,6 @@ Food1_9_adlt <- Food1_9_adlt %>%
                              "1% milk"              = "60",
                              "Smoothies"            = "61"))
                          
-save(Food1_9_adlt, file = "Food1_9_adlt_labl.Rdata")
 
 TableFoogGroup <- Food1_9_adlt %>% 
   ungroup() %>% 
@@ -268,10 +267,44 @@ Food1_9_adlt <- Food1_9_adlt %>%
                                     "LessHealthy", "None"))))
 
 
-# HFood is allfood with HT=0 for hypothesis generation
-# TFood is allfood with HT=1 for hypothesis testing
+# generate diabetes status variable
 
-# Now split the food diaries in two datasets (just by food recordings)
+Indiv1_9_adlt <- Indiv1_9_adlt %>% 
+  mutate(DM4cat = if_else((Diabetes == 2 | Diabetes == 3), 3, 
+                    if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
+                                (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2,
+                      if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), 1, 
+                        if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999))))) 
+
+
+
+
+Indiv1_9_adlt %>% 
+  group_by(DM4cat) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+
+
+NDNS <- Indiv1_9_adlt %>% 
+  select(seriali, DM4cat)
+
+Food1_9_adlt <- Food1_9_adlt %>% 
+  left_join(NDNS, by = "seriali")
+
+save(Food1_9_adlt, file = "Food1_9_adlt_labl.Rdata")
+save(Indiv1_9_adlt, file = "Indiv1_9_adlt.Rdata")
+
+##%######################################################%##
+#                                                          #
+####         Now split the food diaries in two          ####
+####   datasets (just by food recordings) # HFood is    ####
+####   allfood with HT=0 for hypothesis generation #    ####
+#### TFood is allfood with HT=1 for hypothesis testing  ####
+#                                                          #
+##%######################################################%##
+
+
 
 set.seed(1701745)
 Food1_9_adlt$rand <-  runif(dim(Food1_9_adlt)[1], min = 0, max = 1)
@@ -287,23 +320,23 @@ save(HFood, file = "HFood.Rdata")
 
 save(TFood, file = "TFood.Rdata")
   
-# Now split the food diaries in two datasets (by individual)
+# # Now split the food diaries in two datasets (by individual)
+# 
+# NDNS <- Food1_9_adlt[!duplicated(Food1_9_adlt$seriali), ] %>% 
+#   select(seriali)
+# 
+# set.seed(1701745)
+# NDNS$rand <-  runif(dim(NDNS)[1], min = 0, max = 1)
+# NDNS$HT <- NDNS$rand > 0.5
+# 
+# Food1_9_adlt <- Food1_9_adlt %>% 
+#   left_join(NDNS, by = "seriali")
 
-NDNS <- Food1_9_adlt[!duplicated(Food1_9_adlt$seriali), ] %>% 
-  select(seriali)
-
-set.seed(1701745)
-NDNS$rand <-  runif(dim(NDNS)[1], min = 0, max = 1)
-NDNS$HT <- NDNS$rand > 0.5
-
-Food1_9_adlt <- Food1_9_adlt %>% 
-  left_join(NDNS, by = "seriali")
-
-HFood_ind <- Food1_9_adlt %>% 
-  filter(!HT.y)
-  
-Tfood_ind <- Food1_9_adlt %>% 
-  filter(HT.y)
+# HFood_ind <- Food1_9_adlt %>% 
+#   filter(!HT.y)
+#   
+# Tfood_ind <- Food1_9_adlt %>% 
+#   filter(HT.y)
   
 
 ##%######################################################%##
@@ -316,3 +349,54 @@ Tfood_ind <- Food1_9_adlt %>%
 ggplot(HFood, aes(x=factor(DayofWeek)))+
   geom_bar(fill="steelblue")+
   theme_minimal()
+
+##%######################################################%##
+#                                                          #
+####                   Healthy foods                    ####
+#                                                          #
+##%######################################################%##
+
+
+with(HFood[HFood$HealthFoodGr == "Healthy", ], epiDisplay::tabpct(mfgLab, Locat_type))
+with(HFood[HFood$HealthFoodGr == "Healthy", ], epiDisplay::tabpct(mfgLab, MealTimeSlot))
+
+
+freqtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot)
+freqtab
+
+freqtab3g <- xtabs(~HFood$mfgLab + HFood$Time3g)
+freqtab3g
+
+freqLoc_tab3g <-  xtabs(~HFood$mfgLab + HFood$Locat_type)
+freqLoc_tab <-  xtabs(~HFood$mfgLab + HFood$Locat)
+
+
+library(FactoMineR)
+library(factoextra)
+library(gplots)
+
+# balloonplot(t(freqtab))
+
+chisq <- chisq.test(freqtab)
+chisq
+
+
+chisq3g <- chisq.test(freqtab3g)
+chisq3g
+
+
+# computation of CA for all food  and time slots
+
+res.ca <- CA(as.data.frame.matrix(freqtab))
+print(res.ca)
+fviz_screeplot(res.ca, addLabels = TRUE)
+fviz_ca_biplot(res.ca, repel = TRUE)
+
+# computation of CA for all food and location
+
+Loc.ca <- CA(as.data.frame.matrix(freqLoc_tab))
+print(Loc.ca)
+fviz_screeplot(Loc.ca, addLabels = TRUE)
+fviz_ca_biplot(Loc.ca, repel = TRUE)
+
+
