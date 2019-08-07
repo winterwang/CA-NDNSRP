@@ -99,6 +99,7 @@ In all 9 years data combined, there were:
 - 227 diabetes patients   (DM4cat = 3);
 - 99 undiagnosed diabetes (DM4cat = 2);
 - 133 prediabetes         (DM4cat = 1);
+- 2626 non-diabetes participants (DM4cat = 0);
 - 3717 missing values.
 
 
@@ -275,7 +276,7 @@ fviz_ca_biplot(Healthy.ca,
 ```
 
 #### with confidence region (1000 bootstrapping method)
-```{r cache=TRUE, include=FALSE}
+```{r cache=TRUE, include=FALSE, eval=FALSE}
 # extract recordings for healthy foods
 Hthy <- as.logical(HFood$HealthFoodGr == "Healthy")
 Htab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = Hthy)
@@ -285,6 +286,13 @@ Hmatrix <- matrix(data = Htab, nrow = 3, ncol = 7,
 Hcaboot <- cabootcrs(Hmatrix, resampledistn = "multinomial")
 ```
 
+```{r ConfidenceRegion00, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR00.png")
+```
+
+```{r ConfidenceRegion01, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR01.png")
+```
 
 
 #### Neutral food (n = 26)
@@ -300,7 +308,7 @@ fviz_ca_biplot(Neutral.ca,
 #### with confidence region (1000 bootstrapping method)
 
 
-```{r cache=TRUE, include=FALSE}
+```{r cache=TRUE, include=FALSE, eval=FALSE}
 # extract recordings for Neutral foods
 Neut <- as.logical(HFood$HealthFoodGr == "Neutral")
 Ntab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = Neut)
@@ -310,7 +318,13 @@ Nmatrix <- matrix(data = Ntab, nrow = 26, ncol = 7,
 Ncaboot <- cabootcrs(Nmatrix, resampledistn = "multinomial")
 ```
 
+```{r ConfidenceRegion02, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Neutral Foods with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR03.png")
+```
 
+```{r ConfidenceRegion03, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Neutral Foods with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR04.png")
+```
 
 
 
@@ -329,7 +343,7 @@ fviz_ca_biplot(Less.ca,
 #### with confidence region (1000 bootstrapping method)
 
 
-```{r cache=TRUE, include=FALSE}
+```{r cache=TRUE, include=FALSE, eval=FALSE}
 # extract recordings for less healthy foods
 LessHthy <- as.logical(HFood$HealthFoodGr == "LessHealthy")
 Ltab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = LessHthy)
@@ -339,7 +353,13 @@ Lmatrix <- matrix(data = Ltab, nrow = 31, ncol = 7,
 Lcaboot <- cabootcrs(Lmatrix, resampledistn = "multinomial")
 ```
 
+```{r ConfidenceRegion04, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Less Healthy Foods with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR05.png")
+```
 
+```{r ConfidenceRegion05, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Less Healthy Foods with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR06.png")
+```
 
 ### Biplot by food healthiness (2)
 
@@ -353,6 +373,21 @@ fviz_ca_biplot(G1.ca,
                repel = TRUE, title = "Biplot of Correspondence analysis for food group 1 (1st 20 healthy foods).") 
 ```
 
+
+
+#### with confidence region (1000 bootstrapping method)
+```{r cache=TRUE, include=FALSE, eval=FALSE}
+Hcaboot <- cabootcrs(G1Foods, resampledistn = "multinomial")
+```
+
+```{r ConfidenceRegion06, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods (first 20 groups) with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR07.png")
+```
+
+```{r ConfidenceRegion07, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods (first 20 groups) with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR08.png")
+```
+
 #### Food Healthiness Group 2
 
 ```{r fig.height=6, fig.width=8, cache=TRUE}
@@ -362,6 +397,21 @@ G2.ca <- CA(G2Foods, graph = FALSE)
 fviz_ca_biplot(G2.ca, 
                repel = TRUE, title = "Biplot of Correspondence analysis for food group 2 (2nd 20 healthy foods).") 
 ```
+
+
+#### with confidence region (1000 bootstrapping method)
+```{r cache=TRUE, include=FALSE, eval=FALSE}
+Hcaboot <- cabootcrs(G2Foods, resampledistn = "multinomial")
+```
+
+```{r ConfidenceRegion08, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods (middle 20 groups) with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR09.png")
+```
+
+```{r ConfidenceRegion09, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods (middle 20 groups) with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR10.png")
+```
+
 
 
 #### Food Healthiness Group 3
