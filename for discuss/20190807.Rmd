@@ -427,7 +427,7 @@ fviz_ca_biplot(G3.ca,
 
 # CA analysis by diabetes status 
 
-## among diagnosed diabete patients
+## among diagnosed diabetes patients
 
 ```{r fig.height=6, fig.width=8, cache=TRUE}
 DiagDM <- as.logical(HFood$DM4cat.y == 3)
@@ -438,6 +438,28 @@ DiagDMmatrix <- matrix(data = DiagDMtab, nrow = 59, ncol = 7,
 DiagDM.ca <- CA(DiagDMmatrix, graph = FALSE)
 fviz_ca_biplot(DiagDM.ca, 
                repel = TRUE, title = "Biplot of Correspondence analysis among diagnosed DM.") 
+```
+
+
+### Three healthy food only
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+
+HealthyFoods <- as.data.frame.matrix(DiagDMtab)[rownames(as.data.frame.matrix(DiagDMtab)) %in% c("Veg not raw", "Fruit", "Salad and raw veg"),]
+
+Healthy.ca <- CA(HealthyFoods, graph = FALSE)
+fviz_ca_biplot(Healthy.ca, 
+               repel = TRUE, title = "Biplot of CA for 3 healthy food groups in DM patients.") 
+```
+
+### With confidence region 
+
+```{r ConfidenceRegion10, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR11.png")
+```
+
+```{r ConfidenceRegion11, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
+knitr::include_graphics("fig/BootstrapCR12.png")
 ```
 
 ## among non-diabete participants
