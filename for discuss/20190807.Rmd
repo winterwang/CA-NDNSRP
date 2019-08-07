@@ -452,15 +452,64 @@ fviz_ca_biplot(Healthy.ca,
                repel = TRUE, title = "Biplot of CA for 3 healthy food groups in DM patients.") 
 ```
 
-### With confidence region 
+<!-- ### With confidence region  -->
 
-```{r ConfidenceRegion10, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Food groups.", fig.align='center'}
-knitr::include_graphics("fig/BootstrapCR11.png")
+<!-- ```{r ConfidenceRegion10, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Food groups in DM patients.", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR11.png") -->
+<!-- ``` -->
+
+
+<!-- ```{r ConfidenceRegion11, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Time Slots in DM patients", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR12.png") -->
+<!-- ``` -->
+
+
+
+### Neutral food (n = 26)
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+NeutralFoods <- as.data.frame.matrix(DiagDMtab)[rownames(as.data.frame.matrix(DiagDMtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$neutral],]
+
+Neutral.ca <- CA(NeutralFoods, graph = FALSE)
+fviz_ca_biplot(Neutral.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for 26 neutral food groups in DM patients.") 
 ```
 
-```{r ConfidenceRegion11, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Healthy Foods with bootstrap 95% confidence regions for Time Slots.", fig.align='center'}
-knitr::include_graphics("fig/BootstrapCR12.png")
+<!-- ### With confidence region  -->
+
+<!-- ```{r ConfidenceRegion12, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Neutral Foods with bootstrap 95% confidence regions for Food groups in DM patients.", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR13.png") -->
+<!-- ``` -->
+
+
+<!-- ```{r ConfidenceRegion13, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="Neutral Foods with bootstrap 95% confidence regions for Time Slots in DM patients", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR14.png") -->
+<!-- ``` -->
+
+
+### less healthy food (n = 31)
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+LessFoods <- as.data.frame.matrix(DiagDMtab)[rownames(as.data.frame.matrix(DiagDMtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$lesshealthy],]
+
+Less.ca <- CA(LessFoods, graph = FALSE)
+fviz_ca_biplot(Less.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for 31 less healthy food groups in DM patients.") 
 ```
+
+
+<!-- ### With confidence region  -->
+
+<!-- ```{r ConfidenceRegion14, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="less healthy Foods with bootstrap 95% confidence regions for Food groups in DM patients.", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR15.png") -->
+<!-- ``` -->
+
+
+<!-- ```{r ConfidenceRegion15, echo=FALSE, fig.height=6, fig.width=8, cache=TRUE, fig.cap="less healthy Foods with bootstrap 95% confidence regions for Time Slots in DM patients", fig.align='center'} -->
+<!-- knitr::include_graphics("fig/BootstrapCR16.png") -->
+<!-- ``` -->
+
+
 
 ## among non-diabete participants
 
