@@ -188,41 +188,34 @@ TableFoogGroup %>%
 
 ```{r}
 TableFoogGroup <- TableFoogGroup %>% 
-  mutate(HealthPoints3g = cut(meanHpoint, breaks = 3)) %>% 
-  mutate(HealthPoints3g = as.character(HealthPoints3g)) %>% 
-  mutate(HealthPoints3g = fct_recode(HealthPoints3g, 
-                                     G1   = "(-7.06,3.61]",
-                                     G2   = "(3.61,14.3]",
-                                     G3   = "(14.3,24.9]"
-                                     ))
-
+  mutate(HealthPoints3g = ntile(meanHpoint, 3))
 ```
 
 
-#### Healthy foods Group 1 meanHpoint in (-7.06,3.61]
+#### Healthy foods Group 1 (n = 20)
 
 ```{r, cache=TRUE}
 TableFoogGroup %>% 
-  filter(HealthPoints3g == "G1") %>% 
+  filter(HealthPoints3g == 1) %>% 
   select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g) %>% 
   print(n=Inf)
 ```
 
 
 
-#### Healthy foods Group 2 meanHpoint in (3.61,14.3]
+#### Healthy foods Group 2 (n = 20)
 
 ```{r, cache=TRUE}
 TableFoogGroup %>% 
-  filter(HealthPoints3g == "G2") %>% 
+  filter(HealthPoints3g == 2) %>% 
   select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g)
 ```
 
-#### Healthy foods Group 3 meanHpoint in (14.3,24.9]
+#### Healthy foods Group 3 (n = 20)
 
 ```{r, cache=TRUE}
 TableFoogGroup %>% 
-  filter(HealthPoints3g == "G3") %>% 
+  filter(HealthPoints3g == 3) %>% 
   select(-lesshealthy, -neutral,-calcumprop, -healthy, -HealthPoints3g)
 ```
 
@@ -269,7 +262,7 @@ fviz_ca_biplot(res.ca, repel = TRUE, title = "Biplot of Correspondence analysis 
 
 - The vertical axis shows large contribution from alcohol against the others. 
 
-### Biplot by food healthiness
+### Biplot by food healthiness (1)
 
 #### Three healthy food only
 
@@ -281,19 +274,16 @@ fviz_ca_biplot(Healthy.ca,
                repel = TRUE, title = "Biplot of Correspondence analysis for 3 healthy food groups.") 
 ```
 
-
+#### with confidence region (1000 bootstrapping method)
 ```{r cache=TRUE, include=FALSE}
 # extract recordings for healthy foods
 Hthy <- as.logical(HFood$HealthFoodGr == "Healthy")
 Htab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = Hthy)
 library(cabootcrs) 
 Hmatrix <- matrix(data = Htab, nrow = 3, ncol = 7, 
-                  dimnames = list(c("Fruit", "Salad and raw veg", "Veg not raw"), 
-                                  c("6-9am", "9am-1159am", "12noon-0159pm", "2pm-0459pm", 
-                                    "5pm-0759pm", "8pm-0959pm", "10pm-0559am")))
+                  dimnames = list(rownames(Htab), colnames(Htab)))
 Hcaboot <- cabootcrs(Hmatrix, resampledistn = "multinomial")
 ```
-
 
 
 
@@ -305,6 +295,19 @@ NeutralFoods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freq
 Neutral.ca <- CA(NeutralFoods, graph = FALSE)
 fviz_ca_biplot(Neutral.ca, 
                repel = TRUE, title = "Biplot of Correspondence analysis for 26 neutral food groups.") 
+```
+
+#### with confidence region (1000 bootstrapping method)
+
+
+```{r cache=TRUE, include=FALSE}
+# extract recordings for Neutral foods
+Neut <- as.logical(HFood$HealthFoodGr == "Neutral")
+Ntab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = Neut)
+
+Nmatrix <- matrix(data = Ntab, nrow = 26, ncol = 7, 
+                  dimnames = list(rownames(Ntab), colnames(Ntab)))
+Ncaboot <- cabootcrs(Nmatrix, resampledistn = "multinomial")
 ```
 
 
@@ -319,4 +322,114 @@ LessFoods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab
 Less.ca <- CA(LessFoods, graph = FALSE)
 fviz_ca_biplot(Less.ca, 
                repel = TRUE, title = "Biplot of Correspondence analysis for 31 less healthy food groups.") 
+```
+
+
+
+#### with confidence region (1000 bootstrapping method)
+
+
+```{r cache=TRUE, include=FALSE}
+# extract recordings for less healthy foods
+LessHthy <- as.logical(HFood$HealthFoodGr == "LessHealthy")
+Ltab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = LessHthy)
+
+Lmatrix <- matrix(data = Ltab, nrow = 31, ncol = 7, 
+                  dimnames = list(rownames(Ltab), colnames(Ltab)))
+Lcaboot <- cabootcrs(Lmatrix, resampledistn = "multinomial")
+```
+
+
+
+### Biplot by food healthiness (2)
+
+#### Food Healthiness Group 1
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+G1Foods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$HealthPoints3g == 1],]
+
+G1.ca <- CA(G1Foods, graph = FALSE)
+fviz_ca_biplot(G1.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for food group 1 (1st 20 healthy foods).") 
+```
+
+#### Food Healthiness Group 2
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+G2Foods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$HealthPoints3g == 2],]
+
+G2.ca <- CA(G2Foods, graph = FALSE)
+fviz_ca_biplot(G2.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for food group 2 (2nd 20 healthy foods).") 
+```
+
+
+#### Food Healthiness Group 3
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+G3Foods <- as.data.frame.matrix(freqtab)[rownames(as.data.frame.matrix(freqtab)) %in% TableFoogGroup$mfgLab[TableFoogGroup$HealthPoints3g == 3],]
+
+G3.ca <- CA(G3Foods, graph = FALSE)
+fviz_ca_biplot(G3.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis for food group 3 (3rd 20 healthy foods).") 
+```
+
+
+# CA analysis by diabetes status 
+
+## among diagnosed diabete patients
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+DiagDM <- as.logical(HFood$DM4cat.y == 3)
+DiagDMtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = DiagDM)
+DiagDMmatrix <- matrix(data = DiagDMtab, nrow = 59, ncol = 7, 
+                  dimnames = list(rownames(DiagDMtab), colnames(DiagDMtab)))
+
+DiagDM.ca <- CA(DiagDMmatrix, graph = FALSE)
+fviz_ca_biplot(DiagDM.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis among diagnosed DM.") 
+```
+
+## among non-diabete participants
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+DiagDM <- as.logical(HFood$DM4cat.y == 0)
+DiagDMtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = DiagDM)
+DiagDMmatrix <- matrix(data = DiagDMtab, nrow = 60, ncol = 7, 
+                  dimnames = list(rownames(DiagDMtab), colnames(DiagDMtab)))
+
+DiagDM.ca <- CA(DiagDMmatrix, graph = FALSE)
+fviz_ca_biplot(DiagDM.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis among non-diabete participants.") 
+```
+
+
+## among Pre-diabetes participants
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+DiagDM <- as.logical(HFood$DM4cat.y == 1)
+DiagDMtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = DiagDM)
+DiagDMmatrix <- matrix(data = DiagDMtab, nrow = 59, ncol = 7, 
+                  dimnames = list(rownames(DiagDMtab), colnames(DiagDMtab)))
+
+DiagDM.ca <- CA(DiagDMmatrix, graph = FALSE)
+fviz_ca_biplot(DiagDM.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis among Prediabetes participants.") 
+```
+
+
+
+
+
+## among undiagnosed-diabetes participants
+
+```{r fig.height=6, fig.width=8, cache=TRUE}
+DiagDM <- as.logical(HFood$DM4cat.y == 2)
+DiagDMtab <- xtabs(~HFood$mfgLab + HFood$MealTimeSlot, subset = DiagDM)
+DiagDMmatrix <- matrix(data = DiagDMtab, nrow = 59, ncol = 7, 
+                  dimnames = list(rownames(DiagDMtab), colnames(DiagDMtab)))
+
+DiagDM.ca <- CA(DiagDMmatrix, graph = FALSE)
+fviz_ca_biplot(DiagDM.ca, 
+               repel = TRUE, title = "Biplot of Correspondence analysis among undiagnosed DM participants.") 
 ```

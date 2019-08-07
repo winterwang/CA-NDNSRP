@@ -270,11 +270,11 @@ Food1_9_adlt <- Food1_9_adlt %>%
 # generate diabetes status variable
 
 Indiv1_9_adlt <- Indiv1_9_adlt %>% 
-  mutate(DM4cat = if_else((Diabetes == 2 | Diabetes == 3), 3, 
+  mutate(DM4cat = if_else((Diabetes == 2 | Diabetes == 3), 3,  # diagnosed DM
                     if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
-                                (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2,
-                      if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), 1, 
-                        if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999))))) 
+                                (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2, # undiagnosed DM 
+                      if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), 1,  # prediabetes
+                        if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999)))))  # Non-DM
 
 
 
