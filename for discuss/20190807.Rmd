@@ -444,8 +444,8 @@ fviz_ca_biplot(DiagDM.ca,
 ### Three healthy food only
 
 ```{r fig.height=6, fig.width=8, cache=TRUE}
-
-HealthyFoods <- as.data.frame.matrix(DiagDMtab)[rownames(as.data.frame.matrix(DiagDMtab)) %in% c("Veg not raw", "Fruit", "Salad and raw veg"),]
+x <- as.data.frame.matrix(DiagDMtab)
+HealthyFoods <- x[rownames(x) %in% c("Veg not raw", "Fruit", "Salad and raw veg"),]
 
 Healthy.ca <- CA(HealthyFoods, graph = FALSE)
 fviz_ca_biplot(Healthy.ca, 
