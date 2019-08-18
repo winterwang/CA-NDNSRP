@@ -319,7 +319,16 @@ TFood <- Food1_9_adlt %>%
 save(HFood, file = "HFood.Rdata")
 
 save(TFood, file = "TFood.Rdata")
-  
+
+
+TFood <- TFood %>% 
+  left_join(Indiv1_9_adlt[,c("seriali", "nssec8", "area")], by = "seriali")
+names(TFood)[85] <- "DM4cat"
+TFood <- TFood[, -82]
+TFood <- TFood[, -c(6, 10, 11)]
+
+readr::write_csv(TFood, "TFood.csv")
+
 # # Now split the food diaries in two datasets (by individual)
 # 
 # NDNS <- Food1_9_adlt[!duplicated(Food1_9_adlt$seriali), ] %>% 
