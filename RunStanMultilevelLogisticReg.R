@@ -76,6 +76,5 @@ data <- list(N = 6802, I = 374344, DM4cat_1 = Indiv1_9_adlt$DM4cat_1, DM4cat_2 =
              YesPudding = dataForStan$YesPudding)
 
 
-library(rstan)
 fit0 <- stan(file = "runStanProgram/NDNSRP.stan", data = data, 
              pars = c("b", "b_P", "s_P", "q", "OR_Eve_vs_Morn", "OR_Eve_vs_After"), seed = 1234)
