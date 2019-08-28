@@ -1,0 +1,170 @@
+                                                      PUDDING GEE                     16:31 Thursday, August 22, 2019 232
+
+                                                  The GENMOD Procedure
+
+                                                   Model Information
+
+                                            Data Set               WORK.TEST
+                                            Distribution            Binomial
+                                            Link Function              Logit
+                                            Dependent Variable    YESPUDDING
+
+
+                                         Number of Observations Read      175339
+                                         Number of Observations Used      175339
+                                         Number of Events                    524
+                                         Number of Trials                 175339
+
+
+                                                 Class Level Information
+
+                        Class        Levels    Values
+
+                        seriali        3041    10101261 10102011 10102071 10102161 10103071
+                                               10103181 10103211 10104011 10105111 10105261
+                                               10107011 10107251 10107261 10109011 10109071
+                                               10109251 10110011 10110071 10112071 10112251
+                                               10114011 10114251 10115111 10201111 10201161
+                                               10202251 10203161 10204111 ...
+                        TIME2G            2    1 0
+                        DM4cat            4    1 2 3 0
+                        Sex               2    2 1
+                        NSSEC3            3    2 3 1
+                        area           1276    10101 10102 10103 10104 10105 10107 10109 10110
+                                               10112 10114 10115 10201 10202 10203 10204 10205
+                                               10209 10210 10211 10213 10215 10301 10302 10303
+                                               10305 10306 10307 10308 10310 10311 10314 10315
+                                               10401 10402 10404 10405 10407 10408 10410 10411
+                                               10412 10414 ...
+
+
+                                                     Response Profile
+
+                                            Ordered                      Total
+                                              Value    YESPUDDING    Frequency
+
+                                                  1    1                   524
+                                                  2    0                174815
+
+PROC GENMOD is modeling the probability that YESPUDDING='1'.
+
+
+                                                 Parameter Information
+
+                           Parameter       Effect           TIME2G    DM4cat    Sex    NSSEC3
+
+                           Prm1            Intercept
+                           Prm2            TIME2G           1
+                           Prm3            TIME2G           0
+                           Prm4            DM4cat                     1
+                           Prm5            DM4cat                     2
+                           Prm6            DM4cat                     3
+                           Prm7            DM4cat                     0
+                           Prm8            TIME2G*DM4cat    1         1
+                           Prm9            TIME2G*DM4cat    1         2
+                           Prm10           TIME2G*DM4cat    1         3
+                           Prm11           TIME2G*DM4cat    1         0
+                           Prm12           TIME2G*DM4cat    0         1
+                           Prm13           TIME2G*DM4cat    0         2
+                           Prm14           TIME2G*DM4cat    0         3
+                           Prm15           TIME2G*DM4cat    0         0
+                           Prm16           Sex                                  2
+                           Prm17           Sex                                  1
+                           Prm18           Age
+                           Prm19           NSSEC3                                      2
+                           Prm20           NSSEC3                                      3
+                           Prm21           NSSEC3                                      1
+                                                      PUDDING GEE                     16:31 Thursday, August 22, 2019 233
+
+                                                  The GENMOD Procedure
+
+                       Algorithm converged.
+
+
+                                                 GEE Model Information
+
+                               Correlation Structure                          Independent
+                               Subject Effect                  seriali*area (3041 levels)
+                               Number of Clusters                                    3041
+                               Correlation Matrix Dimension                           176
+                               Maximum Cluster Size                                   176
+                               Minimum Cluster Size                                    10
+
+
+                       Algorithm converged.
+
+
+                                                    GEE Fit Criteria
+
+                                                  QIC         7103.9289
+                                                  QICu        7098.4983
+
+
+                                          Analysis Of GEE Parameter Estimates
+                                           Empirical Standard Error Estimates
+
+                                                    Standard   99% Confidence
+                         Parameter         Estimate    Error       Limits            Z Pr > |Z|
+
+                         Intercept          -6.7738   0.2040  -7.2992  -6.2484  -33.21   <.0001
+                         TIME2G        1     0.4086   0.1232   0.0912   0.7260    3.32   0.0009
+                         TIME2G        0     0.0000   0.0000   0.0000   0.0000     .      .
+                         DM4cat        1     0.1967   0.2361  -0.4113   0.8048    0.83   0.4046
+                         DM4cat        2    -0.1281   0.2653  -0.8115   0.5554   -0.48   0.6294
+                         DM4cat        3     0.4086   0.1782  -0.0503   0.8675    2.29   0.0218
+                         DM4cat        0     0.0000   0.0000   0.0000   0.0000     .      .
+                         TIME2G*DM4cat 1 1  -0.5229   0.6702  -2.2493   1.2035   -0.78   0.4353
+                         TIME2G*DM4cat 1 2   0.1860   0.5892  -1.3316   1.7036    0.32   0.7523
+                         TIME2G*DM4cat 1 3  -0.9494   0.5686  -2.4139   0.5151   -1.67   0.0949
+                         TIME2G*DM4cat 1 0   0.0000   0.0000   0.0000   0.0000     .      .
+                         TIME2G*DM4cat 0 1   0.0000   0.0000   0.0000   0.0000     .      .
+                         TIME2G*DM4cat 0 2   0.0000   0.0000   0.0000   0.0000     .      .
+                         TIME2G*DM4cat 0 3   0.0000   0.0000   0.0000   0.0000     .      .
+                         TIME2G*DM4cat 0 0   0.0000   0.0000   0.0000   0.0000     .      .
+                         Sex           2    -0.1782   0.1012  -0.4390   0.0825   -1.76   0.0783
+                         Sex           1     0.0000   0.0000   0.0000   0.0000     .      .
+                         Age                 0.0174   0.0033   0.0089   0.0260    5.24   <.0001
+                         NSSEC3        2     0.0276   0.1254  -0.2954   0.3506    0.22   0.8256
+                         NSSEC3        3     0.0189   0.1157  -0.2791   0.3169    0.16   0.8701
+                         NSSEC3        1     0.0000   0.0000   0.0000   0.0000     .      .
+
+
+                                        Score Statistics For Type 3 GEE Analysis
+
+                                                                  Chi-
+                                    Source               DF     Square    Pr > ChiSq
+
+                                    TIME2G                1       0.10        0.7486
+                                    DM4cat                3       0.11        0.9905
+                                    TIME2G*DM4cat         3       5.39        0.1456
+                                    Sex                   1       2.99        0.0835
+                                    Age                   1      24.87        <.0001
+                                    NSSEC3                2       0.06        0.9723
+
+
+                                               Contrast Estimate Results
+
+                                                                            Mean         Mean           L'Beta  Standard
+Label                                                                   Estimate   Confidence Limits  Estimate     Error
+
+DM4cat = 1 (prediabetes), PUDDING EVENING VS MORNING/AFTERNOON            0.4714    0.1405    0.8296   -0.1143    0.6588
+Exp(DM4cat = 1 (prediabetes), PUDDING EVENING VS MORNING/AFTERNOON)                                     0.8920    0.5876
+DM4cat = 2 (undiagdiabetes), PUDDING EVENING VS MORNING/AFTERNOON         0.6444    0.2915    0.8886    0.5945    0.5755
+Exp(DM4cat = 2 (undiagdiabetes), PUDDING EVENING VS MORNING/AFTERNOON)                                  1.8122    1.0430
+DM4cat = 3 (diabetes), PUDDING EVENING VS MORNING/AFTERNOON               0.3680    0.1223    0.7086   -0.5409    0.5550
+Exp(DM4cat = 3 (diabetes), PUDDING EVENING VS MORNING/AFTERNOON)                                        0.5822    0.3232
+                                                      PUDDING GEE                     16:31 Thursday, August 22, 2019 234
+
+                                                  The GENMOD Procedure
+
+                                               Contrast Estimate Results
+
+                                                                                       L'Beta          Chi-
+ Label                                                                    Alpha   Confidence Limits  Square  Pr > ChiSq
+
+ DM4cat = 1 (prediabetes), PUDDING EVENING VS MORNING/AFTERNOON            0.01   -1.8112    1.5826    0.03      0.8622
+ Exp(DM4cat = 1 (prediabetes), PUDDING EVENING VS MORNING/AFTERNOON)       0.01    0.1635    4.8675
+ DM4cat = 2 (undiagdiabetes), PUDDING EVENING VS MORNING/AFTERNOON         0.01   -0.8879    2.0770    1.07      0.3016
+ Exp(DM4cat = 2 (undiagdiabetes), PUDDING EVENING VS MORNING/AFTERNOON)    0.01    0.4115    7.9806
+ DM4cat = 3 (diabetes), PUDDING EVENING VS MORNING/AFTERNOON               0.01   -1.9705    0.8887    0.95      0.3298
+ Exp(DM4cat = 3 (diabetes), PUDDING EVENING VS MORNING/AFTERNOON)          0.01    0.1394    2.4321
