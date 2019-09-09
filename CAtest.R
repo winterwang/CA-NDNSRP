@@ -118,3 +118,8 @@ F <-  CentR %*% solve(Dc) %*% (Dc.sqrt %*% V)
 
 ## column profile 
 G <- CentC %*% solve(Dr) %*% (Dr.sqrt %*% U)
+
+
+## sqare root of matrix singular values
+d.sqrt <- solve(expm::sqrtm(diag(svd(z)$d)))
+Row <- F %*% d.sqrt
