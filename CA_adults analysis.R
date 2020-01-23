@@ -274,13 +274,28 @@ Indiv1_9_adlt <- Indiv1_9_adlt %>%
                     if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
                                 (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2, # undiagnosed DM 
                       if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), 1,  # prediabetes
-                        if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999)))))  # Non-DM
-
+                        if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999))))) %>%  # Non-DM
+  mutate(DM4cat_reas = if_else((Diabetes == 2 | Diabetes == 3), "3",  # diagnosed DM
+                          if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
+                                      (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), "2", # undiagnosed DM 
+                            if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), "1",  # prediabetes
+                              if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), "0", 
+                               if_else(Diabetes == -1, "Not applicable", 
+                                if_else(Diabetes == -9, "Refusal", 
+                                  if_else(Diabetes == -8, "Don't know", 
+                                   if_else(Diabetes == -4, "not collected this year", 
+                                    if_else(Diabetes == -2, "schedule not applicable", '999'))))))))))  # Non-DM
 
 
 
 Indiv1_9_adlt %>% 
   group_by(DM4cat) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+
+Indiv1_9_adlt %>% 
+  group_by(DM4cat_reas) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
   print(n=Inf)

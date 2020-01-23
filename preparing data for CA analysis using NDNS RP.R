@@ -7,7 +7,7 @@
 library(haven)
 
 path <- c("~/pCloud Drive/LSHTM/study/project/6533stata_NDNSRP20190719/UKDA-6533-stata/stata/stata11_se/")
-path <- c("~/ドキュメント/NDNS/UKDA-6533-stata-downloaded in Japan/stata/stata11_se/") # path on Ubuntu 16.04
+# path <- c("~/ドキュメント/NDNS/UKDA-6533-stata-downloaded in Japan/stata/stata11_se/") # path on Ubuntu 16.04
 
 ndns_rp_yr1_4a_indiv_uk <- read_dta(paste(path, "ndns_rp_yr1-4a_indiv_uk.dta", sep = ""))
 ndns_rp_yr5_6a_indiv_uk <- read_dta(paste(path, "ndns_rp_yr5-6a_indiv.dta", sep = ""))
@@ -42,7 +42,8 @@ indiv_yr1_4 <- ndns_rp_yr1_4a_indiv_uk %>%
                                  Glucose = -1, A1C = -1,
                                  cigsta3 = -1, nssec8 = -8, 
                                  ethgr5 = -4, ethgr2 = -4, 
-                                 Diabetes = -1, dnoft3 = -9)) %>% 
+                                 # Diabetes = -1, 
+                                 dnoft3 = -9)) %>% 
   replace_with_na(replace = list(nssec8 = -1, qual7 = -1, 
                                  dnoft3 = -8, dnnow = -8)) %>% 
   replace_with_na(replace = list(nssec8 = 99, dnnow = -9,
@@ -66,16 +67,21 @@ indiv_yr5_6 <- ndns_rp_yr5_6a_indiv_uk %>%
                                  Glucose = -1, A1C = -1,
                                  cigsta3 = -9, nssec8 = -8, 
                                  ethgr5 = -4, ethgr2 = -4, 
-                                 Diabetes = -1, dnoft3 = -9)) %>% 
+                                 # Diabetes = -1,
+                                 dnoft3 = -9)) %>% 
   replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
                                  dnoft3 = -8, dnnow = -8, wstval = -8, 
-                                 Diabetes = -9, cigsta3 = -8)) %>% 
+                                 # Diabetes = -9,
+                                 cigsta3 = -8)) %>% 
   replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
-                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 dnoft3 = -4, wstval = -4, 
+                                 # Diabetes = -8,
                                  cigsta3 = -4)) %>% 
   replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
-                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
-  replace_with_na(replace = list(Diabetes = -4))
+                                 bmival = -9, wstval = -9
+                                 # , Diabetes = -2
+                                 ))# %>% 
+  # replace_with_na(replace = list(Diabetes = -4))
 
 indiv_yr7_8 <- ndns_rp_yr7_8a_indiv_uk %>% 
   select(c(seriali, serialh, cluster1, cluster2, cluster3, cluster4, cluster5,
@@ -91,16 +97,21 @@ indiv_yr7_8 <- ndns_rp_yr7_8a_indiv_uk %>%
                                  Glucose = -1, A1C = -1,
                                  cigsta3 = -9, nssec8 = -8, 
                                  ethgr5 = -4, ethgr2 = -4, 
-                                 Diabetes = -1, dnoft3 = -9)) %>% 
+                                 # Diabetes = -1, 
+                                 dnoft3 = -9)) %>% 
   replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
                                  dnoft3 = -8, dnnow = -8, wstval = -8, 
-                                 Diabetes = -9, cigsta3 = -8)) %>% 
+                                 # Diabetes = -9, 
+                                 cigsta3 = -8)) %>% 
   replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
-                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 dnoft3 = -4, wstval = -4, 
+                                 # Diabetes = -8,
                                  cigsta3 = -4)) %>% 
   replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
-                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
-  replace_with_na(replace = list(Diabetes = -4))
+                                 bmival = -9, wstval = -9
+                                 # , Diabetes = -2
+                                 )) #%>% 
+  # replace_with_na(replace = list(Diabetes = -4))
 
 
 indiv_yr9 <- ndns_rp_yr9a_indiv_uk %>% 
@@ -118,16 +129,21 @@ indiv_yr9 <- ndns_rp_yr9a_indiv_uk %>%
                                  Glucose = -1, A1C = -1,
                                  cigsta3 = -9, nssec8 = -8, 
                                  ethgr5 = -4, ethgr2 = -4, 
-                                 Diabetes = -1, dnoft3 = -9)) %>% 
+                                 # Diabetes = -1, 
+                                 dnoft3 = -9)) %>% 
   replace_with_na(replace = list(nssec8 = -1, qual7 = -1, bmival = -8,
                                  dnoft3 = -8, dnnow = -8, wstval = -8, 
-                                 Diabetes = -9, cigsta3 = -8)) %>% 
+                                 # Diabetes = -9, 
+                                 cigsta3 = -8)) %>% 
   replace_with_na(replace = list(nssec8 = 99, dnnow = -9, bmival = -4,
-                                 dnoft3 = -4, wstval = -4, Diabetes = -8,
+                                 dnoft3 = -4, wstval = -4, 
+                                 # Diabetes = -8,
                                  cigsta3 = -4)) %>% 
   replace_with_na(replace = list(dnoft3 = -1, dnnow = -4, cigsta3 = -1,
-                                 bmival = -9, wstval = -9, Diabetes = -2)) %>% 
-  replace_with_na(replace = list(Diabetes = -4))
+                                 bmival = -9, wstval = -9
+                                 # , Diabetes = -2
+                                 )) # %>% 
+  # replace_with_na(replace = list(Diabetes = -4))
 
 ##%######################################################%##
 #                                                          #
