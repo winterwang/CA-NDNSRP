@@ -70,7 +70,7 @@ Food1_9_teen <- Food1_9_teen %>%
   mutate(H_points = A_points - C_points)
 
 
-save(Food1_9_teen, file = "Food1_9_adlt_Hpoints.Rdata")
+save(Food1_9_teen, file = "Food1_9_teen_Hpoints.Rdata")
 
 
 
@@ -82,21 +82,57 @@ save(Food1_9_teen, file = "Food1_9_adlt_Hpoints.Rdata")
 
 
 
-load("Food1_9_adlt_Hpoints.Rdata")
+load("Food1_9_teen_Hpoints.Rdata")
 library(tidyverse)
 
+Food1_9_teen <- Food1_9_teen %>% 
+  mutate(MealTimeSlot = factor(MealTimeDescription, 
+                               levels = c("6am to 8:59am", 
+                                          "9am to 11:59am",
+                                          "12 noon to 1:59pm",
+                                          "2pm to 4:59pm",
+                                          "5pm to 7:59pm",
+                                          "8pm to 9:59pm",
+                                          "10pm to 5:59am"))) %>% 
+  mutate(DayW = factor(DayofWeek, 
+                       levels = c("Monday", "Tuesday",
+                                  "Wednesday", "Thursday", 
+                                  "Friday", "Saturday", 
+                                  "Sunday")))
 
 
 Food1_9_teen %>% 
   ungroup() %>% 
   group_by(Where) %>% 
   summarise(n = n()) %>% 
-  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  arrange(-n) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 3), "%"))  %>% 
+  mutate(relfreq = n/sum(n)) %>% 
+  mutate(cumprop = paste0(round(100 * cumsum(relfreq), 3), "%")) %>% 
+  select(-relfreq) %>% 
   print(n=Inf)
+
+
+
+
+
+TableFoogGroup <- Food1_9_teen %>% 
+  ungroup() %>% 
+  group_by(mfgLab) %>% 
+  summarise(n = n(), meanHpoint = mean(H_points, na.rm = T), mfgCalories = sum(Energykcal)) %>% 
+  arrange(-mfgCalories) %>% 
+  mutate(n.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  mutate(cal.Prop = paste0(round(100 * mfgCalories/sum(mfgCalories), 2), "%"))  %>% 
+  mutate(calprop = mfgCalories/sum(mfgCalories)) %>% 
+  mutate(calcumprop = paste0(round(100 * cumsum(calprop), 3), "%")) %>% 
+  print(n=Inf)
+
+
+
 
 Food1_9_teen %>% 
   ungroup() %>% 
-  group_by(MealTimeDescription) %>% 
+  group_by(MealTimeSlot) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
   print(n=Inf)
@@ -216,6 +252,7 @@ TableFoogGroup <- Food1_9_teen %>%
   mutate(calcumprop = paste0(round(100 * cumsum(calprop), 3), "%")) %>% 
   print(n=Inf)
 
+save(Food1_9_teen, file = "Food1_9_teen_Hpoints.Rdata")
 
 
 ##%######################################################%##
