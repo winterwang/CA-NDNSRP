@@ -275,6 +275,12 @@ Indiv1_9_adlt <- Indiv1_9_adlt %>%
                                 (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2, # undiagnosed DM 
                       if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1)), 1,  # prediabetes
                         if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999))))) %>%  # Non-DM
+  mutate(DM4cat_HB =  if_else((Diabetes == 2 | Diabetes == 3), 3,  # diagnosed DM
+                              if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
+                                          (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), 2, # undiagnosed DM 
+                                       if_else((Glucose >= 6.1 & Glucose < 7 & (Diabetes == 1) | 
+                                                  (A1C < 6.5 & A1C >= 5.7)), 1,  # prediabetes
+                                               if_else((Diabetes == 1) & (Glucose < 7) & (A1C < 6.5), 0, 999))))) %>% 
   mutate(DM4cat_reas = if_else((Diabetes == 2 | Diabetes == 3), "3",  # diagnosed DM
                           if_else( ((Glucose >= 7 & (Diabetes != 2 & Diabetes != 3)) |
                                       (A1C >= 6.5 & (Diabetes != 2 & Diabetes != 3))), "2", # undiagnosed DM 
@@ -294,12 +300,35 @@ Indiv1_9_adlt %>%
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
   print(n=Inf)
 
+# # A tibble: 5 x 3
+# DM4cat     n rel.freq
+# *  <dbl> <int> <chr>   
+# 1      0  2626 38.61%  
+# 2      1   133 1.96%   
+# 3      2    99 1.46%   
+# 4      3   227 3.34%   
+# 5     NA  3717 54.65%  
+
 Indiv1_9_adlt %>% 
   group_by(DM4cat_reas) %>% 
   summarise(n = n()) %>% 
   mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
   print(n=Inf)
 
+Indiv1_9_adlt %>% 
+  group_by(DM4cat_HB) %>% 
+  summarise(n = n()) %>% 
+  mutate(rel.freq = paste0(round(100 * n/sum(n), 2), "%"))  %>% 
+  print(n=Inf)
+
+# 
+# DM4cat_HB     n rel.freq
+# *     <dbl> <int> <chr>   
+# 1         0  1871 27.51%  
+# 2         1   888 13.05%  
+# 3         2    99 1.46%   
+# 4         3   227 3.34%   
+# 5        NA  3717 54.65%  
 
 NDNS <- Indiv1_9_adlt %>% 
   select(seriali, DM4cat)
