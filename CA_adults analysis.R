@@ -452,4 +452,48 @@ print(Loc.ca)
 fviz_screeplot(Loc.ca, addLabels = TRUE)
 fviz_ca_biplot(Loc.ca, repel = TRUE)
 
+##%######################################################%##
+#                                                          #
+####        export data with bmival as TFood.csv        ####
+#                         20210728                         #
+##%######################################################%##
+
+
+load("~/Documents/CA-NDNSRP/Indiv1_9_adlt.Rdata")
+load("~/Documents/CA-NDNSRP/Food1_9_adlt.Rdata")
+names(Indiv1_9_adlt)
+
+NDNS <- Indiv1_9_adlt %>%
+  select(seriali, bmival, nssec8, area, DM4cat)
+Food1_9_adlt <- Food1_9_adlt %>%
+  left_join(NDNS, by = "seriali")
+
+# save(Food1_9_adlt, file = "Food1_9_adlt_labl.Rdata")
+set.seed(1701745)
+Food1_9_adlt$rand <-  runif(dim(Food1_9_adlt)[1], min = 0, max = 1)
+Food1_9_adlt$HT <- Food1_9_adlt$rand > 0.5
+
+Food1_9_adlt$Time3g <-  fct_collapse(Food1_9_adlt$MealTimeSlot,
+                                    Morning = c("6am to 8:59am", "9am to 11:59am"),
+                                    Afternoon = c("12 noon to 1:59pm", "2pm to 4:59pm",
+                                                  "5pm to 7:59pm"),
+                                    Evening = c("8pm to 9:59pm", "10pm to 5:59am"))
+fct_count(Food1_9_adlt$Time3g)
+
+
+
+
+
+
+HFood <- Food1_9_adlt %>%filter(!HT)
+
+TFood <- Food1_9_adlt %>%
+        filter(HT)
+
+
+save(TFood, file = "TFood.Rdata")
+save(HFood, file = "HFood.Rdata")
+readr::write_csv(TFood, "TFood.csv")
+
+
 
